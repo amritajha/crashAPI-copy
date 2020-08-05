@@ -153,13 +153,6 @@ def map_pts_roads():
 @app.route('/_ah/warmup')
 def warmup():
     return '', 200, {}
-"""
-@app.after_request
-def after_request(res):
-    res.headers.add('Access-Control-Allow-Origin', '*')
-    res.headers.add('Access-Control-Allow-Headers', 'content-type')
-    res.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-    return res
-"""
+
 if __name__ == '__main__':
     app.run(host ='127.0.0.1', port=8080, debug=True)
