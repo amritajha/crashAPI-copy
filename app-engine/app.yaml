@@ -1,0 +1,10 @@
+runtime: python37
+
+env_variables:
+  APIKEY: "AIzaSyBR9Zhv4vzt7FUJXRJymXRCJ2N8sTWOqk0"
+
+automatic_scaling:
+  max_instances: 10
+
+inbound_services:
+  - warmup
