@@ -1,0 +1,636 @@
+swagger: "2.0"
+info:
+  title: Ometry Atlas
+  description: Ometry Atlas OpenAPI Documentation
+  version: 1.0.0
+host: ometry-api-esp-dd6vwls5ra-uc.a.run.app
+schemes:
+  - https
+produces:
+  - application/json
+security:
+  - api_key: []
+x-google-backend:
+  address: "https://crash-api-281519.uc.r.appspot.com"
+  jwt_audience: 7022692901-43vkmiehlj9o9c61u4oeqvunjmeqnua3.apps.googleusercontent.com
+paths:
+  /point_radius:
+    get:
+      description: "Given a point, returns info (roads, crashes) within a circle distance"
+      operationId: point_radius
+      x-google-quota:
+        metricCosts:
+          request-ctr: 1
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                surrounding_info:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: road
+                    id:
+                      type: integer
+                      example: 878314877
+                    name:
+                      type: string
+                      example: MAIN ST
+                    geography:
+                      type: string
+                      example: "LINESTRING(-72.67332 41.7658, -72.67324 41.76619)"
+                    date:
+                      type: string
+                      format: date
+                      example: null
+                    distance:
+                      type: number
+                      example: 0.58650016961118
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/badRequest"
+      parameters:
+        - description: address of the point
+          in: query
+          name: address
+          type: string
+          required: false
+        - description: longitude of the point
+          in: query
+          name: longitude
+          type: number
+          default: 0
+          required: false
+        - description: latitude of the point
+          in: query
+          name: latitude
+          type: number
+          default: 0
+          required: false
+        - description: radius of the circle around the point
+          in: query
+          name: radius
+          type: number
+          default: 10
+          required: false
+        - description: start date of search
+          in: query
+          name: start_date
+          type: string
+          format: date
+          required: false
+        - description: end date of search
+          in: query
+          name: end_date
+          type: string
+          format: date
+          required: false
+  /road_fuzzy_match:
+    get:
+      description: "Given a road’s name, returns crashes on the road"
+      operationId: road_fuzzy_match
+      x-google-quota:
+        metricCosts:
+          request-ctr: 1
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crashid:
+                  type: integer
+                  example: 731023
+                location:
+                  type: string
+                  example: POINT(-73.200379 41.196767)
+                date_of_crash:
+                  type: string
+                  format: date
+                  example: "2020-01-01"
+                link_id:
+                  type: integer
+                  example: 1210571193
+                st_name:
+                  type: string
+                  example: MAIN ST
+                distance:
+                  type: number
+                  example: 2.7367392175349443
+                ld_ratio:
+                  type: number
+                  example: 1
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/badRequest"
+      parameters:
+        - description: road name
+          in: query
+          name: road_name
+          type: string
+          required: true
+        - description: distance
+          in: query
+          name: distance
+          type: number
+          default: 10
+          required: false
+        - description: start date of search
+          in: query
+          name: start_date
+          type: string
+          format: date
+          required: false
+        - description: end date of search
+          in: query
+          name: end_date
+          type: string
+          format: date
+          required: false
+        - description: threshold
+          in: query
+          name: threshold
+          type: number
+          default: 0.8
+          required: false
+  /find_crashinfo_by_county:
+    get:
+      description: Return aggregated information for input County
+      operationId: find_crashinfo_by_county
+      x-google-quota:
+        metricCosts:
+          request-ctr: 1
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              County_Name:
+                type: string
+                example: Fairfield
+              Total_Num_Crashes:
+                type: integer
+                example: 2570
+              Crash_Severity_Fatal:
+                type: integer
+                example: 4
+              Crash_Severity_Injury:
+                type: integer
+                example: 510
+              Crash_Severity_Property_Damage_Only:
+                type: integer
+                example: 2056
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/badRequest"
+      parameters:
+        - description: county name
+          in: query
+          name: county_string
+          type: string
+          required: true
+        - description: start date of search
+          in: query
+          name: start_date
+          type: string
+          format: date
+          required: false
+        - description: end date of search
+          in: query
+          name: end_date
+          type: string
+          format: date
+          required: false
+        - description: threshold
+          in: query
+          name: threshold
+          type: number
+          default: 0.8
+          required: false
+  /map_pts_roads:
+    post:
+      description: In progress
+      operationId: map_pts_roads
+      x-google-quota:
+        metricCosts:
+          request-ctr: 1
+      parameters:
+        - in: body
+          name: trip
+          description: trip to search.
+          schema:
+            type: object
+            required:
+              - tripId
+              - userId
+              - pointInfo
+            properties:
+              tripId:
+                type: integer
+                example: 32769
+              userId:
+                type: integer
+                example: 1609
+              pointInfo:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - latitude
+                    - longitude
+                  properties:
+                    latitude:
+                      type: number
+                      example: 33.1724386
+                    longitude:
+                      type: number
+                      example: -97.0513848
+                    speed:
+                      type: number
+                      example: 8.11
+                    timestamp:
+                      type: string
+                      example: "2019-07-01 14:14:38.866+00"
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                idx:
+                  type: integer
+                  example: 0
+                distance:
+                  type: number
+                  example: 4.356469381961121
+                link_id:
+                  type: integer
+                  example: 1026096827
+                point:
+                  type: string
+                  example: POINT(-97.0513848 33.1724386)
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/badRequest"
+  "/vin_search/{vinCode}":
+    get:
+      description: "Given a VIN, Returns the info of the vehicle"
+      operationId: vin_search
+      x-google-quota:
+        metricCosts:
+          request-ctr: 1
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              CrashId:
+                type: integer
+                example: 697179
+              VehicleId:
+                type: integer
+                example: 2
+              Vehicle_Unit_Type:
+                type: integer
+                example: 2
+              Vehicle_Unit_Type_Text_Format:
+                type: string
+                example: Parked Vehicle
+              Number_of_Occupants_in_Vehicle:
+                type: integer
+                example: 0
+              Make:
+                type: string
+                example: Honda
+              Vehicle_Model_Year:
+                type: integer
+                example: 2009
+              Vehicle_Model_Year_Text_Format:
+                type: string
+                example: 2009
+              Model:
+                type: string
+                example: Civic
+              Vehicle_Color:
+                type: string
+                example: White
+              Direction_of_Travel_Before_Crash:
+                type: string
+                example: null
+              Direction_of_Travel_Before_Crash_Text_Format:
+                type: string
+                example: null
+              Direction_is_Unknown:
+                type: boolean
+                example: true
+              Most_Harmful_Event:
+                type: integer
+                example: 23
+              Most_Harmful_Event_Text_Format:
+                type: string
+                example: Parked Vehicle
+              Vehicle_Maneuver_Action:
+                type: integer
+                example: 97
+              Vehicle_Maneuver_Action_Text_Format:
+                type: string
+                example: Other
+              Contributing_Circumstances__Motor_Vehicle:
+                type: integer
+                example: 0
+              Contributing_Circumstances__Motor_Vehicle_Text_Format:
+                type: string
+                example: None
+              Contributing_Circumstances__Motor_Vehicle_19:
+                type: integer
+                example: 88
+              Contributing_Circumstances__Motor_Vehicle_Text_Format_20:
+                type: string
+                example: Not Applicable
+              Posted_Statutory_Speed_Limit:
+                type: integer
+                example: 25
+              Towed_Status:
+                type: integer
+                example: 3
+              Towed_Status_Text_Format:
+                type: string
+                example: Not Towed
+              Trafficway_Description:
+                type: integer
+                example: 1
+              Trafficway_Description_Text_Format:
+                type: string
+                example: "Two-Way, Not Divided"
+              Total_Lanes_In_Roadway:
+                type: string
+                example: null
+              Roadway_Alignment:
+                type: integer
+                example: 1
+              Roadway_Alignment_Text_Format:
+                type: string
+                example: Straight
+              Roadway_Grade:
+                type: integer
+                example: 1
+              Roadway_Grade_Text_Format:
+                type: string
+                example: Level
+              Initial_Contact_Point:
+                type: integer
+                example: 10
+              Initial_Contact_Point_Text_Format:
+                type: string
+                example: Sector 10 (NorthWest) in the 12-point Clock Diagram
+              Extent_of_Damage:
+                type: integer
+                example: 3
+              Extent_of_Damage_Text_Format:
+                type: string
+                example: Functional Damage
+              Body_Type:
+                type: integer
+                example: 1
+              Body_Type_Text_Format:
+                type: string
+                example: Passenger Car
+              Vehicle_Action:
+                type: integer
+                example: 97
+              Vehicle_Action_Text_Format:
+                type: string
+                example: Other
+              Contributing_Circumstances_of_Vehicle:
+                type: integer
+                example: 0
+              Contributing_Circumstances_of_Vehicle_Text_Format:
+                type: string
+                example: None
+              VIN:
+                type: string
+                example: 3HAFZ19629H227731
+              Traffic_Control_Device_Type:
+                type: integer
+                example: 1
+              Traffic_Control_Device_Type_Text_Format:
+                type: string
+                example: No Control Device
+              Traffic_Control_Device_Functional_:
+                type: integer
+                example: 88
+              Traffic_Control_Device_Functional__Text_Format:
+                type: string
+                example: Not Applicable
+              Sequence_of_Events_1:
+                type: integer
+                example: 23
+              Sequence_of_Events_1_Text_Format:
+                type: string
+                example: Parked Vehicle
+              Sequence_of_Events_2:
+                type: integer
+                example: 88
+              Sequence_of_Events_2_Text_Format:
+                type: string
+                example: Not Applicable
+              Sequence_of_Events_3:
+                type: integer
+                example: 88
+              Sequence_of_Events_3_Text_Format:
+                type: string
+                example: Not Applicable
+              Sequence_of_Events_4:
+                type: integer
+                example: 88
+              Sequence_of_Events_4_Text_Format:
+                type: string
+                example: Not Applicable
+              Special_Function_Of_Vehicle_In_Operation:
+                type: integer
+                example: 1
+              Special_Function_Of_Vehicle_In_Operation_Text_Format:
+                type: string
+                example: No Special Function
+              Emergency_Vehicle_Use:
+                type: integer
+                example: 88
+              Emergency_Vehicle_Use_Text_Format:
+                type: string
+                example: Not Applicable
+              Were_Hazardous_Materials_Released:
+                type: string
+                example: null
+              Were_Hazardous_Materials_Released_Text_Format:
+                type: string
+                example: null
+              Owner_City:
+                type: string
+                example: null
+              Owner_State:
+                type: string
+                example: null
+              Owner_Country:
+                type: string
+                example: null
+              Owner_Postal_Code:
+                type: string
+                example: null
+              Owner_Information_Same_As_Driver:
+                type: boolean
+                example: true
+              Hit_And_Run_Status:
+                type: boolean
+                example: false
+              Towed_To:
+                type: string
+                example: null
+              Was_Serial_Number_Missing_Removed:
+                type: boolean
+                example: false
+              Bike_Lanes_Sharrows_Present:
+                type: boolean
+                example: false
+              Name_Of_Roadway_On_Which_Vehicle_Was_Traveling:
+                type: string
+                example: null
+              Vehicle_Was_Not_On_Roadway:
+                type: boolean
+                example: true
+              Motor_Vehicle_Registration_State:
+                type: string
+                example: CT
+              Motor_Vehicle_Registration_Was_Invalid:
+                type: boolean
+                example: false
+              Motor_Vehicle_Registration_Plate_Was_Missing:
+                type: boolean
+                example: false
+              Bus_Use:
+                type: integer
+                example: 88
+              Name_Of_Issuing_Insurance_Company:
+                type: string
+                example: Geico
+              US_DOT_Number:
+                type: string
+                example: null
+              Carrier_Name:
+                type: string
+                example: null
+              Carrier_City:
+                type: string
+                example: null
+              Carrier_State:
+                type: string
+                example: null
+              Carrier_Country:
+                type: string
+                example: null
+              Carrier_Postal_Code:
+                type: string
+                example: null
+              Carrier_Type:
+                type: string
+                example: null
+              Carrier_Type_Text_Format:
+                type: string
+                example: null
+              Power_Unit_Owner_Information_Same_As_Carrier:
+                type: string
+                example: null
+              Power_Unit_Owner_City:
+                type: string
+                example: null
+              Power_Unit_Owner_State:
+                type: string
+                example: null
+              Power_Unit_Owner_Country:
+                type: string
+                example: null
+              Power_Unit_Owner_Postal_Code:
+                type: string
+                example: null
+              Gross_Vehicle_Weight_Rating:
+                type: string
+                example: null
+              Gross_Vehicle_Weight_Rating_Text_Format:
+                type: string
+                example: null
+              Vehicle_Configuration:
+                type: string
+                example: null
+              Vehicle_Configuration_Text_Format:
+                type: string
+                example: null
+              Cargo_Body_Type:
+                type: string
+                example: null
+              Cargo_Body_Type_Text_Format:
+                type: string
+                example: null
+              Insurance_Expiration_Date:
+                type: string
+                format: date
+                example: "2020-01-01"
+              Hazardous_Materials_Placard_Display:
+                type: string
+                example: null
+              Hazardous_Materials_Placard_Display_Text_Format:
+                type: string
+                example: null
+              Hazardou_sMaterials_Placard_Number:
+                type: string
+                example: null
+              Hazardou_sMaterials_Placard_Class_Num:
+                type: string
+                example: null
+      parameters:
+        - description: VIN
+          in: path
+          name: vinCode
+          type: string
+          required: true
+definitions:
+  badRequest:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 400
+      message:
+        type: string
+        example: Invalid request
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: key
+    in: query
+x-google-management:
+  metrics:
+    - name: request-ctr
+      displayName: requests
+      valueType: INT64
+      metricKind: DELTA
+  quota:
+    limits:
+      - name: limit-on-api-requests
+        values:
+          STANDARD: 5000
+        unit: "1/min/{project}"
+        metric: request-ctr

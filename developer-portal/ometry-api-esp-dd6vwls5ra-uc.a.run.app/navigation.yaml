@@ -1,0 +1,10 @@
+ordering:
+  - Introduction
+  - Guides
+  - API Reference
+  - Resources
+
+folders:
+  Guides:
+    ordering:
+      - API Services
