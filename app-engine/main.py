@@ -14,8 +14,12 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 @app.route('/point_radius', methods=['GET'])
 def point_radius():
     client = bigquery.Client(project='crash-api-281519')
+
+    # set time zone to EST
     tz = timezone('EST')
     
+    # If the user sends an address, not latitude and longitude
+    # convert it to lat and long
     address = request.args.get('address')
     if address:
         url = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -39,10 +43,12 @@ def point_radius():
         longitude = request.args.get('longitude', 0.0, type=float)
         latitude = request.args.get('latitude', 0.0, type=float)
 
+    # get the query strings
     radius = request.args.get('radius', 24140.0, type=float)
     year = request.args.get('year', int(datetime.now(tz).strftime('%Y')), type=int)
     month = request.args.get('month', 1, type=int)
 
+    # write query
     query = """
         CALL `crash-api-281519.crashData.point_radius_p3`(@lon, @lat, @distance, @in_year, @in_month);
     """
@@ -71,8 +77,11 @@ def point_radius():
 def road_fuzzy_match():
     client = bigquery.Client()
 
+    # set time zone to EST
     tz = timezone('EST')
     dateFormat = '%Y-%m-%d'
+    
+    # get the date one year ago from today
     past = (datetime.now(tz) - relativedelta(years=1)).strftime(dateFormat)
     today = datetime.now(tz).strftime(dateFormat)
 
@@ -98,8 +107,11 @@ def road_fuzzy_match():
 def find_crashinfo_by_county():
     client = bigquery.Client()
 
+    # set time zone to EST
     tz = timezone('EST')
     dateFormat = '%Y-%m-%d'
+
+    # get the date one year ago from today
     past = (datetime.now(tz) - relativedelta(years=1)).strftime(dateFormat)
     today = datetime.now(tz).strftime(dateFormat)
 
@@ -160,9 +172,7 @@ def map_pts_roads():
     else:
         return jsonify('Bad Request'), 400
 
+# warm-up requests
 @app.route('/_ah/warmup')
 def warmup():
     return '', 200, {}
-
-if __name__ == '__main__':
-    app.run(host ='127.0.0.1', port=8080, debug=True)

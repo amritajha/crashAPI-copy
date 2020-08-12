@@ -1,10 +1,15 @@
+# python runtime version
 runtime: python37
 
+# declare env variables - good practices rather than hardcoding sensitive info
 env_variables:
   APIKEY: "AIzaSyBR9Zhv4vzt7FUJXRJymXRCJ2N8sTWOqk0"
 
+# configs
 automatic_scaling:
+  # limit the max instances
   max_instances: 10
 
+# warm-up requests
 inbound_services:
   - warmup
