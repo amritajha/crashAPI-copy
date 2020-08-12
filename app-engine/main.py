@@ -15,9 +15,6 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 def point_radius():
     client = bigquery.Client(project='crash-api-281519')
     tz = timezone('EST')
-    dateFormat = '%Y-%m-%d'
-    past = (datetime.now(tz) - relativedelta(years=1)).strftime(dateFormat)
-    today = datetime.now(tz).strftime(dateFormat)
     
     address = request.args.get('address')
     if address:
@@ -42,16 +39,29 @@ def point_radius():
         longitude = request.args.get('longitude', 0.0, type=float)
         latitude = request.args.get('latitude', 0.0, type=float)
 
-    radius = request.args.get('radius', 30.0, type=float)
-    startDate = request.args.get('start_date', past)
-    endDate = request.args.get('end_date', today)
-    
-    query = "CALL `crash-api-281519.crashData.point_radius`(%f, %f, %f, '%s', '%s');" \
-            % (longitude, latitude, radius, startDate, endDate)
-    
-    job = client.query(query,location="US")
-    
-    rows = job.result()
+    radius = request.args.get('radius', 24140.0, type=float)
+    year = request.args.get('year', int(datetime.now(tz).strftime('%Y')), type=int)
+    month = request.args.get('month', 1, type=int)
+
+    query = """
+        CALL `crash-api-281519.crashData.point_radius_p3`(@lon, @lat, @distance, @in_year, @in_month);
+    """
+
+    query_params = [bigquery.ScalarQueryParameter('lon', 'FLOAT64', longitude),
+                    bigquery.ScalarQueryParameter('lat', 'FLOAT64', latitude),
+                    bigquery.ScalarQueryParameter('distance', 'FLOAT64', radius),
+                    bigquery.ScalarQueryParameter('in_year', 'INT64', year),
+                    bigquery.ScalarQueryParameter('in_month', 'INT64', month)]
+
+    job_config = bigquery.QueryJobConfig(dry_run=False, use_query_cache=True)
+    job_config.query_parameters = query_params
+    query_job = client.query(
+        query,
+        location="US",
+        job_config=job_config,
+    )
+
+    rows = query_job.result()
     data = rows.to_dataframe()
     data = data.to_dict(orient='records')
     
@@ -153,3 +163,6 @@ def map_pts_roads():
 @app.route('/_ah/warmup')
 def warmup():
     return '', 200, {}
+
+if __name__ == '__main__':
+    app.run(host ='127.0.0.1', port=8080, debug=True)
