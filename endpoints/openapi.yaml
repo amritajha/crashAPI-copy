@@ -73,23 +73,21 @@ paths:
           type: number
           default: 0
           required: false
-        - description: radius of the circle around the point
+        - description: maximum distance from a road to a point
           in: query
           name: radius
           type: number
           default: 10
           required: false
-        - description: start date of search
+        - description: selected year to return risk scores
           in: query
-          name: start_date
-          type: string
-          format: date
+          name: year
+          type: integer
           required: false
-        - description: end date of search
+        - description: selected month to return risk scores
           in: query
-          name: end_date
-          type: string
-          format: date
+          name: month
+          type: integer
           required: false
   /road_fuzzy_match:
     get:
