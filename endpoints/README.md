@@ -10,7 +10,12 @@
 - Command to deploy
   - ```gcloud endpoints services deploy openapi-appengine.yaml --project ESP_PROJECT_ID```
   - The command above assumes 'openapi-appengine.yaml' in the current directory
-  
+
+### Developer Portal Accessibility
+- Currently, Google does not support making Developer Portal public - [https://groups.google.com/g/google-cloud-endpoints/c/-GrnDqyauiI](https://groups.google.com/g/google-cloud-endpoints/c/-GrnDqyauiI)
+- Permission must be granted to the user who wants access to Ometry Atlas Developer Portal
+- Permission can be given at the API level by going to the endpoints page of the API and expanding the permission panel on the right side. There, type the email account and grant **the Service Consumer role** to the user.
+
 ### Sample Code
 ```
 swagger: '2.0'
